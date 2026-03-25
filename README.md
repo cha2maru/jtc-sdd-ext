@@ -105,4 +105,4 @@ node dist/validator/main.js ../projects/[プロジェクト名]
 
 ## ライセンス
 
-This project is private.
+MIT License
