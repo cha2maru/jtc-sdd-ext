@@ -1,0 +1,31 @@
+{
+  "name": "jtc-sdd-ext",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Design workflow extension with Agent Skills",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "validate": "tsx src/validator/main.ts"
+  },
+  "dependencies": {
+    "remark": "^15.0.1",
+    "remark-gfm": "^4.0.0",
+    "remark-parse": "^11.0.0",
+    "unified": "^11.0.5",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "@types/mdast": "^4.0.4",
+    "@types/node": "^22.13.9",
+    "jest": "^30.3.0",
+    "ts-jest": "^29.4.6",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2"
+  }
+}

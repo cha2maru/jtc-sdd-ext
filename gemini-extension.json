@@ -1,0 +1,6 @@
+{
+  "name": "jtc-sdd-ext",
+  "version": "1.0.0",
+  "description": "Agent Skillsを中心とした設計ワークフロー拡張機能",
+  "contextFileName": "GEMINI.md"
+}
