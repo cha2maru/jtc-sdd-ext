@@ -1,3 +1,4 @@
+import path from 'path';
 import { unified } from 'unified';
 import remarkParse from 'remark-parse';
 import remarkGfm from 'remark-gfm';
@@ -35,7 +36,8 @@ export class MarkdownParser {
 
   async parse(fileContent: string, fileName: string): Promise<ParseResult> {
     const tree = this.processor.parse(fileContent) as Root;
-    const schema = SCHEMAS[fileName as keyof typeof SCHEMAS];
+    const baseName = path.basename(fileName);
+    const schema = SCHEMAS[baseName as keyof typeof SCHEMAS];
     const result: ParseResult = {
       file: fileName,
       sectionsFound: [],
@@ -44,12 +46,14 @@ export class MarkdownParser {
       detailedSections: [],
     };
 
+    let activeSchemaSection: string | null = null;
     let currentSection: string | null = null;
 
     for (const node of tree.children) {
       // Heading (H1, H2, H3)
       if (node.type === 'heading') {
         const text = this.getTextContent(node);
+        console.log(`DEBUG: Heading found: depth=${node.depth}, text="${text}"`);
         if (node.depth === 1) {
           result.title = text;
           // スキーマチェック
@@ -63,6 +67,19 @@ export class MarkdownParser {
           currentSection = text;
           result.sectionsFound.push(text);
           result.detailedSections.push({ heading: text, level: node.depth });
+
+          // スキーマに定義されているセクション名かチェック
+          if (schema) {
+            const matchedKey = Object.keys(schema.sections).find(key => 
+              text.includes(key) || key.includes(text)
+            );
+            if (matchedKey) {
+              activeSchemaSection = matchedKey;
+            } else if (node.depth <= 2) {
+              // 同レベル以上の未知のセクションが来たらリセット
+              activeSchemaSection = null;
+            }
+          }
         }
       }
 
@@ -73,8 +90,8 @@ export class MarkdownParser {
           result.detailedSections[result.detailedSections.length - 1]!.table = rows;
         }
 
-        if (currentSection && schema?.sections[currentSection]?.table) {
-          const tableResult = this.parseTable(node, schema.sections[currentSection]!.table!, fileName);
+        if (activeSchemaSection && schema?.sections[activeSchemaSection]?.table) {
+          const tableResult = this.parseTable(node, schema.sections[activeSchemaSection]!.table!, fileName);
           result.ids.push(...tableResult.ids);
           result.errors.push(...tableResult.errors.map(err => `[${currentSection}] ${err}`));
         }
@@ -87,7 +104,7 @@ export class MarkdownParser {
           result.detailedSections[result.detailedSections.length - 1]!.list = items;
         }
 
-        if (currentSection && schema?.sections[currentSection]?.listIds) {
+        if (activeSchemaSection && schema?.sections[activeSchemaSection]?.listIds) {
           this.extractIdsFromList(items, fileName, node.position?.start.line || 0, result);
         }
       }
@@ -106,7 +123,7 @@ export class MarkdownParser {
   }
 
   private extractIdFromText(text: string, isDef: boolean, line: number, file: string, result: ParseResult) {
-    const match = text.match(/([A-Z]+-[X\d]+)/);
+    const match = text.match(/([A-Z]+-[\d]+(?:-[A-Z0-9]+)?)/);
     if (match && !match[0].includes('XXX') && match[0] !== '[ID]') {
       result.ids.push({ id: match[0], isDefinition: isDef, file, line });
     }
@@ -114,7 +131,7 @@ export class MarkdownParser {
 
   private extractIdsFromList(items: string[], file: string, line: number, result: ParseResult) {
     for (const item of items) {
-      const matches = item.matchAll(/([A-Z]+-[X\d]+)/g);
+      const matches = item.matchAll(/([A-Z]+-[\d]+(?:-[A-Z0-9]+)?)/g);
       for (const m of matches) {
         if (!m[0].includes('XXX') && m[0] !== '[ID]') {
           result.ids.push({ id: m[0], isDefinition: false, file, line });
@@ -129,7 +146,9 @@ export class MarkdownParser {
     if (rows.length === 0) return result;
 
     const headers = rows[0]!.children.map(cell => this.getTextContent(cell).trim());
+    console.log(`DEBUG: Table headers: [${headers.join(', ')}]`);
     const idIdx = headers.indexOf(schema.idColumn);
+    console.log(`DEBUG: idIdx=${idIdx} for idColumn="${schema.idColumn}"`);
     const parentIdx = schema.parentColumn ? headers.indexOf(schema.parentColumn) : -1;
     const relatedIdx = schema.relatedColumn ? headers.indexOf(schema.relatedColumn) : -1;
     const fileIdx = schema.fileColumn ? headers.indexOf(schema.fileColumn) : -1;

@@ -114,6 +114,12 @@ export class ProjectValidator {
     // 4. 網羅性チェック
     this.checkCoverage();
 
+    // 5. 分割密度チェック (REQ < SPEC < FUNC)
+    this.checkDecompositionDensity();
+
+    // 6. 実装網羅性チェック (All FUNCs assigned to COMPs)
+    this.checkImplementationCoverage();
+
     return this.issues;
   }
 
@@ -211,6 +217,68 @@ export class ProjectValidator {
             severity: 'warning',
           });
         }
+      }
+    }
+  }
+
+  private checkDecompositionDensity() {
+    let reqCount = 0;
+    let specCount = 0;
+    let funcCount = 0;
+
+    for (const id of this.allDefinitions.keys()) {
+      if (id.startsWith('REQ-')) reqCount++;
+      else if (id.startsWith('SPEC-')) specCount++;
+      else if (id.startsWith('FUNC-')) funcCount++;
+    }
+
+    console.log(`DEBUG: REQ=${reqCount}, SPEC=${specCount}, FUNC=${funcCount}`);
+
+    if (reqCount > 0 && specCount > 0 && reqCount >= specCount) {
+      this.issues.push({
+        file: 'requirements.md',
+        message: `要求(REQ: ${reqCount})に対し詳細要件(SPEC: ${specCount})の数が不足しています。十分な詳細化が行われていません。`,
+        severity: 'warning',
+      });
+    }
+
+    if (specCount > 0 && funcCount > 0 && specCount >= funcCount) {
+      this.issues.push({
+        file: 'functions.md',
+        message: `詳細要件(SPEC: ${specCount})に対し機能定義(FUNC: ${funcCount})の数が不足しています。実装に向けた分解が不十分です。`,
+        severity: 'warning',
+      });
+    }
+  }
+
+  private checkImplementationCoverage() {
+    const allFuncIds = Array.from(this.allDefinitions.keys()).filter(id => id.startsWith('FUNC-'));
+    const assignedFuncIds = new Set<string>();
+
+    for (const def of this.allDefinitions.values()) {
+      if (def.id.startsWith('COMP-') && def.relatedIds) {
+        for (const relatedId of def.relatedIds) {
+          if (relatedId.startsWith('FUNC-')) {
+            assignedFuncIds.add(relatedId);
+          }
+        }
+      }
+    }
+
+    for (const funcId of allFuncIds) {
+      const isAssigned = Array.from(assignedFuncIds).some(assignedId => 
+        funcId === assignedId || (assignedId.endsWith('-') === false && funcId.startsWith(assignedId + '-'))
+      );
+
+      if (!isAssigned) {
+        const def = this.allDefinitions.get(funcId);
+        this.issues.push({
+          file: def?.file || 'functions.md',
+          line: def?.line,
+          id: funcId,
+          message: `機能(FUNC)がどのコンポーネント(COMP)にも割り当てられていません。実装配置が不明です。`,
+          severity: 'error',
+        });
       }
     }
   }

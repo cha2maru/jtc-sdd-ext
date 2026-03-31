@@ -3,9 +3,9 @@ import { z } from 'zod';
 // ID 抽出パターンの定義
 export const ID_PATTERNS = {
   REQ: /^REQ-\d{3,4}$/,
-  SPEC: /^SPEC-\d{3,4}$/,
-  FUNC: /^FUNC-\d{3,4}$/,
-  COMP: /^COMP-\d{3,4}$/,
+  SPEC: /^SPEC-\d{3,4}(-[A-Z0-9]+)?$/,
+  FUNC: /^FUNC-\d{3,4}(-[A-Z0-9]+)?$/,
+  COMP: /^COMP-\d{3,4}(-[A-Z0-9]+)?$/,
   NREQ: /^NREQ-\d{3,4}$/,
   TEST: /^TEST-\d{3,4}(-[NSA]-\d{2})?$/,
   ACC: /^ACC-\d{3,4}$/,
@@ -76,7 +76,7 @@ export const SCHEMAS = {
         table: {
           idColumn: 'ID',
           relatedColumn: '関連要件ID',
-          requiredColumns: ['ID', '機能名・内容', '関連要件ID', '状態'],
+          requiredColumns: ['ID', '機能名', '内容・詳細ロジック', '関連要件ID', '状態'],
         },
       },
       '論理構造セクション (Components)': {

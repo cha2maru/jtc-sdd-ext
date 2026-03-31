@@ -7,6 +7,7 @@ import { TestExporter } from './exporter.js';
 
 async function main() {
   const args = process.argv.slice(2);
+  console.log(`DEBUG: args=${args}`);
   const projectDir = args.find(a => !a.startsWith('--'));
   const exportPath = args.includes('--export') ? args[args.indexOf('--export') + 1] : null;
 
@@ -17,13 +18,15 @@ async function main() {
 
   const parser = new MarkdownParser();
   const validator = new ProjectValidator();
-  const results = [];
 
-  // 1. スキャン対象のディレクトリを定義
+  const resolvedProjectDir = path.resolve(process.cwd(), projectDir);
+  console.log(`DEBUG: resolvedProjectDir=${resolvedProjectDir}`);
+
+  // 1. スキャニング対象のディレクトリを定義
   const scanDirs = [
-    projectDir,
-    path.join(projectDir, 'tests/integration'),
-    path.join(projectDir, 'tests/acceptance'),
+    resolvedProjectDir,
+    path.join(resolvedProjectDir, 'tests/integration'),
+    path.join(resolvedProjectDir, 'tests/acceptance'),
   ];
 
   const allFiles: { path: string; name: string }[] = [];
@@ -32,7 +35,10 @@ async function main() {
       const files = fs.readdirSync(dir)
         .filter(f => f.endsWith('.md'))
         .map(f => ({ path: path.join(dir, f), name: f }));
+      console.log(`DEBUG: Found ${files.length} files in ${dir}`);
       allFiles.push(...files);
+    } else {
+      console.log(`DEBUG: Directory not found: ${dir}`);
     }
   }
   
@@ -41,7 +47,10 @@ async function main() {
     
     // スキーマの動的決定
     let schemaName = file.name;
-    if (!SCHEMAS[schemaName as keyof typeof SCHEMAS]) {
+    const baseName = path.basename(file.path);
+    console.log(`DEBUG: Scanning file=${baseName}, path=${file.path}`);
+
+    if (!SCHEMAS[baseName as keyof typeof SCHEMAS]) {
       // ファイル名でマッチしない場合、H1タイトルから推測
       const h1Match = content.match(/^# (?:結合試験書|総合試験書): \[(TEST|ACC)-\d{3,4}\].*$/m);
       if (h1Match && h1Match[1]) {
