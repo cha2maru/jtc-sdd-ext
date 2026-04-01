@@ -5,7 +5,7 @@ import { ID_PATTERNS } from './schemas.js';
 
 export interface ValidationIssue {
   file: string;
-  line?: number;
+  line?: number | undefined;
   id?: string;
   message: string;
   severity: 'error' | 'warning';
@@ -36,14 +36,28 @@ export class ProjectValidator {
         this.validateIdFormat(extracted);
 
         if (extracted.isDefinition) {
-          if (this.allDefinitions.has(extracted.id)) {
-            this.issues.push({
-              file: extracted.file,
-              line: extracted.line,
-              id: extracted.id,
-              message: `IDが重複定義されています: ${extracted.id} (以前の定義: ${this.allDefinitions.get(extracted.id)?.file})`,
-              severity: 'error',
-            });
+          const existing = this.allDefinitions.get(extracted.id);
+          if (existing) {
+            // 重複チェックの緩和ルール
+            const isExistingIndex = existing.file.endsWith('requirements.md');
+            const isNewIndex = extracted.file.endsWith('requirements.md');
+            
+            if (isExistingIndex && !isNewIndex) {
+              // 一覧(requirements.md)から詳細(specs/)への上書きは許可
+              this.allDefinitions.set(extracted.id, extracted);
+            } else if (!isExistingIndex && isNewIndex) {
+              // 詳細が既にある場合の一覧での定義はスキップ（エラーにしない）
+              continue;
+            } else {
+              // それ以外の重複（詳細同士など）はエラー
+              this.issues.push({
+                file: extracted.file,
+                line: extracted.line,
+                id: extracted.id,
+                message: `IDが重複定義されています: ${extracted.id} (以前の定義: ${existing.file})`,
+                severity: 'error',
+              });
+            }
           } else {
             this.allDefinitions.set(extracted.id, extracted);
           }
@@ -119,6 +133,9 @@ export class ProjectValidator {
 
     // 6. 実装網羅性チェック (All FUNCs assigned to COMPs)
     this.checkImplementationCoverage();
+
+    // 7. 機能集約チェック (All FUNCs in specs/ must be in functions.md)
+    this.checkFunctionAggregation();
 
     return this.issues;
   }
@@ -272,13 +289,40 @@ export class ProjectValidator {
 
       if (!isAssigned) {
         const def = this.allDefinitions.get(funcId);
-        this.issues.push({
+        const issue: ValidationIssue = {
           file: def?.file || 'functions.md',
           line: def?.line,
           id: funcId,
           message: `機能(FUNC)がどのコンポーネント(COMP)にも割り当てられていません。実装配置が不明です。`,
           severity: 'error',
-        });
+        };
+        this.issues.push(issue);
+      }
+    }
+  }
+
+  private checkFunctionAggregation() {
+    const allFuncDefinitions = Array.from(this.allDefinitions.entries()).filter(([id]) => id.startsWith('FUNC-'));
+    const functionsMdPath = 'functions.md';
+
+    for (const [id, def] of allFuncDefinitions) {
+      const isSpecFile = def.file.includes('/specs/') || path.basename(def.file).startsWith('SPEC-');
+      
+      if (isSpecFile) {
+        // specファイルにあるFUNCがfunctions.mdにも定義されているか
+        const existsInFunctionsMd = allFuncDefinitions.some(([fid, fdef]) => 
+          fid === id && (fdef.file.endsWith('functions.md') || fdef.file.includes('/functions.md'))
+        );
+
+        if (!existsInFunctionsMd) {
+          this.issues.push({
+            file: def.file,
+            line: def.line,
+            id: id,
+            message: `この機能(FUNC)は functions.md に集約されていません。`,
+            severity: 'error',
+          });
+        }
       }
     }
   }

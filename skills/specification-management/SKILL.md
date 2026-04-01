@@ -22,6 +22,7 @@ description: |
 1. **要求の分解**: `requirements.md` にある抽象的な要求（`REQ-XXX`）を読み取り、それを満たすために必要な複数の詳細要件（`SPEC-XXX`）を抽出します。
 2. **ナンバリングと紐付け**: 各詳細要件に一意のID（例: `SPEC-001`）を割り振り、必ず元の要求ID（`REQ-XXX`）と紐付けます。
 3. **ドキュメント管理**: 分解した結果を `requirements.md` の詳細要件セクションに整理します。
+4. **詳細設計への誘導**: 各 `SPEC-XXX` の具体的な中身や機能抽出が必要な場合は、`specification-detail-management` に委ねて `specs/SPEC-XXX.md` を作成させます。
 
 ## 詳細要件の定義項目 (requirements.md)
 - **ID**: `SPEC-XXX` 形式

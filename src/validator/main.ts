@@ -25,6 +25,7 @@ async function main() {
   // 1. スキャニング対象のディレクトリを定義
   const scanDirs = [
     resolvedProjectDir,
+    path.join(resolvedProjectDir, 'specs'),
     path.join(resolvedProjectDir, 'tests/integration'),
     path.join(resolvedProjectDir, 'tests/acceptance'),
   ];
@@ -46,15 +47,24 @@ async function main() {
     const content = fs.readFileSync(file.path, 'utf-8');
     
     // スキーマの動的決定
-    let schemaName = file.name;
     const baseName = path.basename(file.path);
+    let schemaName = baseName;
     console.log(`DEBUG: Scanning file=${baseName}, path=${file.path}`);
 
     if (!SCHEMAS[baseName as keyof typeof SCHEMAS]) {
-      // ファイル名でマッチしない場合、H1タイトルから推測
-      const h1Match = content.match(/^# (?:結合試験書|総合試験書): \[(TEST|ACC)-\d{3,4}\].*$/m);
-      if (h1Match && h1Match[1]) {
-        schemaName = h1Match[1] === 'TEST' ? 'TEST-XXX.md' : 'ACC-XXX.md';
+      // ファイル名パターンでマッチさせる
+      if (baseName.startsWith('SPEC-')) {
+        schemaName = 'SPEC-XXX.md';
+      } else if (baseName.startsWith('TEST-')) {
+        schemaName = 'TEST-XXX.md';
+      } else if (baseName.startsWith('ACC-')) {
+        schemaName = 'ACC-XXX.md';
+      } else {
+        // ファイル名でマッチしない場合、H1タイトルから推測
+        const h1Match = content.match(/^# (?:結合試験書|総合試験書|詳細仕様書): \[(TEST|ACC|SPEC)-\d{3,4}\].*$/m);
+        if (h1Match && h1Match[1]) {
+          schemaName = `${h1Match[1]}-XXX.md`;
+        }
       }
     }
 

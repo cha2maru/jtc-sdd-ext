@@ -5,9 +5,12 @@ export const ID_PATTERNS = {
   REQ: /^REQ-\d{3,4}$/,
   SPEC: /^SPEC-\d{3,4}(-[A-Z0-9]+)?$/,
   FUNC: /^FUNC-\d{3,4}(-[A-Z0-9]+)?$/,
+  DATA: /^DATA-\d{3,4}(-[A-Z0-9]+)?$/,
   COMP: /^COMP-\d{3,4}(-[A-Z0-9]+)?$/,
+  UNIT: /^UNIT-\d{3,4}(-[A-Z0-9]+)?$/,
+  DEP: /^DEP-\d{3,4}$/,
   NREQ: /^NREQ-\d{3,4}$/,
-  TEST: /^TEST-\d{3,4}(-[NSA]-\d{2})?$/,
+  TEST: /^TEST-\d{3,4}(-[A-Z]-\d{2})?$/,
   ACC: /^ACC-\d{3,4}$/,
 } satisfies Record<string, RegExp>;
 
@@ -40,7 +43,7 @@ export const DocumentSchema = z.object({
 export type DocumentSchemaType = z.infer<typeof DocumentSchema>;
 
 // 各ドキュメントの具体的な定義
-export const SCHEMAS = {
+export const SCHEMAS: Record<string, DocumentSchemaType> = {
   'requirements.md': {
     title: '要求・要件定義書 (Requirements & Specifications)',
     sections: {
@@ -89,6 +92,34 @@ export const SCHEMAS = {
       },
     },
   },
+  'architecture.md': {
+    title: '物理構造定義書 (System Architecture)',
+    sections: {
+      'ユニット集約セクション (Units)': {
+        table: {
+          idColumn: 'ID',
+          relatedColumn: '包含する論理ID',
+          fileColumn: '物理パス',
+          requiredColumns: ['ID', 'ユニット名', '役割・責務', '包含する論理ID', '物理パス'],
+        },
+      },
+      'コンポーネント構造セクション (Components)': {
+        table: {
+          idColumn: 'ID',
+          relatedColumn: '包含するユニットID',
+          fileColumn: '物理パス',
+          requiredColumns: ['ID', 'コンポーネント名', '概要', '包含するユニットID', '物理パス'],
+        },
+      },
+      '依存関係セクション (Dependencies)': {
+        table: {
+          idColumn: 'ID',
+          requiredColumns: ['ID', '種別', 'ソース (From)', 'ターゲット (To)', '理由・性質'],
+        },
+      },
+      '変更履歴': { required: false },
+    },
+  },
   'TEST-XXX.md': {
     title: /^結合試験書: \[TEST-\d{3,4}\].*$/,
     sections: {
@@ -102,6 +133,27 @@ export const SCHEMAS = {
           requiredColumns: ['項目ID', 'シナリオ種別', '試験項目名', '合否判定基準', '状態'],
         },
       },
+    },
+  },
+  'SPEC-XXX.md': {
+    title: /^詳細仕様書: \[SPEC-\d{3,4}\].*$/,
+    sections: {
+      '関連要求': { listIds: true },
+      '仕様詳細': { required: false },
+      '詳細設計 (Detailed Design)': { required: false },
+      '論理データ定義 (Data Entities)': {
+        table: {
+          idColumn: 'ID',
+          requiredColumns: ['ID', '名称', '内容・状態遷移・不変条件', '状態'],
+        },
+      },
+      '機能抽出 (Function Decomposition)': {
+        table: {
+          idColumn: 'ID',
+          requiredColumns: ['ID', '機能名', '内容・詳細ロジック', '状態'],
+        },
+      },
+      '技術検討・採用ライブラリ': { required: false },
     },
   },
   'ACC-XXX.md': {
@@ -120,5 +172,5 @@ export const SCHEMAS = {
       },
     },
   },
-} satisfies Record<string, DocumentSchemaType>;
+};
 

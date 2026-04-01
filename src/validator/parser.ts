@@ -90,10 +90,13 @@ export class MarkdownParser {
           result.detailedSections[result.detailedSections.length - 1]!.table = rows;
         }
 
-        if (activeSchemaSection && schema?.sections[activeSchemaSection]?.table) {
-          const tableResult = this.parseTable(node, schema.sections[activeSchemaSection]!.table!, fileName);
-          result.ids.push(...tableResult.ids);
-          result.errors.push(...tableResult.errors.map(err => `[${currentSection}] ${err}`));
+        if (activeSchemaSection && schema?.sections) {
+          const sectionConfig = schema.sections[activeSchemaSection];
+          if (sectionConfig?.table) {
+            const tableResult = this.parseTable(node, sectionConfig.table, fileName);
+            result.ids.push(...tableResult.ids);
+            result.errors.push(...tableResult.errors.map(err => `[${currentSection}] ${err}`));
+          }
         }
       }
 
@@ -104,8 +107,11 @@ export class MarkdownParser {
           result.detailedSections[result.detailedSections.length - 1]!.list = items;
         }
 
-        if (activeSchemaSection && schema?.sections[activeSchemaSection]?.listIds) {
-          this.extractIdsFromList(items, fileName, node.position?.start.line || 0, result);
+        if (activeSchemaSection && schema?.sections) {
+          const sectionConfig = schema.sections[activeSchemaSection];
+          if (sectionConfig?.listIds) {
+            this.extractIdsFromList(items, fileName, node.position?.start.line || 0, result);
+          }
         }
       }
     }
