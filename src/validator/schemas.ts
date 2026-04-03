@@ -1,11 +1,11 @@
 import { z } from 'zod';
 
-// ID 抽出パターンの定義
+// ID 抽出パターンの定義 (階層型対応)
 export const ID_PATTERNS = {
   REQ: /^REQ-\d{3,4}$/,
-  SPEC: /^SPEC-\d{3,4}(-[A-Z0-9]+)?$/,
-  FUNC: /^FUNC-\d{3,4}(-[A-Z0-9]+)?$/,
-  DATA: /^DATA-\d{3,4}(-[A-Z0-9]+)?$/,
+  SPEC: /^SPEC-\d{3,4}-\d{2,3}(-[A-Z0-9]+)?$/,
+  FUNC: /^FUNC-\d{3,4}-\d{2,3}-\d{2,3}(-[A-Z0-9]+)?$/,
+  DATA: /^DATA-\d{3,4}-\d{2,3}(-[A-Z0-9]+)?$/,
   COMP: /^COMP-\d{3,4}(-[A-Z0-9]+)?$/,
   UNIT: /^UNIT-\d{3,4}(-[A-Z0-9]+)?$/,
   DEP: /^DEP-\d{3,4}$/,
