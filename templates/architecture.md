@@ -1,5 +1,17 @@
 # 物理構造定義書 (System Architecture)
 
+## アーキテクチャ構成図 (Configuration Diagram)
+システムの物理的な階層構造とユニット間の依存関係を可視化します。
+
+```plantuml
+@startuml
+package "Example Layer" {
+  [Example Component] as comp
+  file "example.ts" as unit
+}
+@enduml
+```
+
 ## ユニット集約セクション (Units)
 論理的な機能（FUNC）やデータ（DATA）を、物理的なソースコード単位（UNIT）にまとめます。
 

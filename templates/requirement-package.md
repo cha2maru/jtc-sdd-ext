@@ -45,7 +45,6 @@ logic --> data
 ロバストネス図の Control に対応します。
 
 ### [FUNC-XXX-YYY-ZZZ] 機能名
-- **対応COMP**: [COMP-XXX]
 - **Input**: 
 - **Logic**: 
 - **Output**: 
