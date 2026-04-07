@@ -88,24 +88,35 @@ async function main() {
 
   // ソースコードスキャン
   let sourceIds: any[] = [];
-  if (sourceDirArg) {
+  let effectiveSourceDir = sourceDirArg;
+  
+  // --source が指定されていない場合、プロジェクト内の src を自動探索
+  if (!effectiveSourceDir) {
+    const autoSrc = path.join(resolvedProjectDir, 'src');
+    if (fs.existsSync(autoSrc)) {
+      effectiveSourceDir = autoSrc;
+    }
+  }
+
+  if (effectiveSourceDir && fs.existsSync(effectiveSourceDir)) {
     const scanner = new SourceScanner();
-    const resolvedSourceDir = path.resolve(process.cwd(), sourceDirArg);
+    const resolvedSourceDir = path.resolve(process.cwd(), effectiveSourceDir);
     console.log(`🔍 ソースコードをスキャン中: ${resolvedSourceDir}`);
     sourceIds = await scanner.scan(resolvedSourceDir);
     console.log(`✅ ソースコードから ${sourceIds.length} 個のIDを抽出しました。`);
+  } else {
+    console.log('⚠️  ソースコードディレクトリが指定されていないか、見つかりません。未実装としてレポートを生成します。');
   }
 
   const issues = validator.validate(results, projectDir, sourceIds);
 
-  // トレーサビリティレポート
-  if (tracePath && sourceIds.length > 0) {
-    const extractor = new DependencyExtractor();
-    const map = extractor.extractMap(results, sourceIds, projectDir, issues);
-    extractor.saveAsJson(map, `${tracePath}.json`);
-    extractor.saveAsMarkdown(map, `${tracePath}.md`);
-    console.log(`📜 トレーサビリティレポートを作成しました: ${tracePath}.md, ${tracePath}.json`);
-  }
+  // トレーサビリティレポート (常に生成)
+  const effectiveTracePath = tracePath || path.join(resolvedProjectDir, 'traceability-report');
+  const extractor = new DependencyExtractor();
+  const map = extractor.extractMap(results, sourceIds, projectDir, issues);
+  extractor.saveAsJson(map, `${effectiveTracePath}.json`);
+  extractor.saveAsMarkdown(map, `${effectiveTracePath}.md`);
+  console.log(`📜 トレーサビリティレポートを作成しました: ${effectiveTracePath}.md, ${effectiveTracePath}.json`);
 
   // CSVエクスポート
   if (exportPath) {
