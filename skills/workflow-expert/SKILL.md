@@ -27,10 +27,11 @@ description: |
 6.  **試験・実装**: `integration-test-expert` による TEST 策定と `design-implementation-expert` による実装。
 7.  **最終検証**: レビューとバリデーション。
 
-### B. プロトタイプフロー (Bottom-Up)
-1.  **試作実装**: TDD による迅速な実装。
-2.  **逆生成**: `reverse-document-expert` による `architecture.md` および `REQ-XXX.md` の自動抽出。
-3.  **PRSマージ**: 全体インデックスへの登録。
+### B. プロトタイプフロー (Prototype-First)
+1.  **要求集約**: `requirement-management` により、プロトタイプの全機能を単一の `REQ-XXX.md`（例：REQ-PROTO.md）に集約して定義します。
+2.  **物理設計・試験設計**: `architecture.md` および `TEST-XXX.md`, `ACC-XXX.md` は通常通り個別のファイルとして作成し、検証の質を維持します。
+3.  **試作実装**: 集約された要求に基づき、迅速に実装を行います。
+4.  **レビュー・反映**: プロトタイプで得られた知見を、必要に応じて「堅牢設計モード」の分割された要求へと昇華させます。
 
 ## 専門的な役割
 1.  **分業の制御**: `requirement-management`（整流）と `specification-detail-management`（詳細化）のバトンタッチを管理します。

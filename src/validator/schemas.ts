@@ -2,16 +2,16 @@ import { z } from 'zod';
 
 // ID 抽出パターンの定義 (階層型対応)
 export const ID_PATTERNS = {
-  REQ: /^REQ-\d{3,4}$/,
-  SPEC: /^SPEC-\d{3,4}-\d{2,3}(-[A-Z0-9]+)?$/,
-  FUNC: /^FUNC-\d{3,4}-\d{2,3}-\d{2,3}(-[A-Z0-9]+)?$/,
-  DATA: /^DATA-\d{3,4}-\d{2,3}(-[A-Z0-9]+)?$/,
-  COMP: /^COMP-\d{3,4}(-[A-Z0-9]+)?$/,
-  UNIT: /^UNIT-\d{3,4}(-[A-Z0-9]+)?$/,
-  DEP: /^DEP-\d{3,4}$/,
-  NREQ: /^NREQ-\d{3,4}$/,
-  TEST: /^TEST-\d{3,4}(-[A-Z]-\d{2})?$/,
-  ACC: /^ACC-\d{3,4}$/,
+  REQ: /^REQ-[A-Z0-9-]+$/,
+  SPEC: /^SPEC-[A-Z0-9-]+$/,
+  FUNC: /^FUNC-[A-Z0-9-]+$/,
+  DATA: /^DATA-[A-Z0-9-]+$/,
+  COMP: /^COMP-[A-Z0-9-]+$/,
+  UNIT: /^UNIT-[A-Z0-9-]+$/,
+  DEP: /^DEP-[A-Z0-9-]+$/,
+  NREQ: /^NREQ-[A-Z0-9-]+$/,
+  TEST: /^TEST-[A-Z0-9-]+$/,
+  ACC: /^ACC-[A-Z0-9-]+$/,
 } satisfies Record<string, RegExp>;
 
 export type IdType = keyof typeof ID_PATTERNS;
@@ -45,49 +45,22 @@ export type DocumentSchemaType = z.infer<typeof DocumentSchema>;
 // 各ドキュメントの具体的な定義
 export const SCHEMAS: Record<string, DocumentSchemaType> = {
   'requirements.md': {
-    title: '要求・要件定義書 (Requirements & Specifications)',
+    title: /^(要求・要件定義書|プロダクト要求仕様書) \(Requirements & Specifications|Product Requirements Specification\)$/,
     sections: {
-      '技術スタック・制約 (Technical Stack & Constraints)': { required: false },
-      '要求セクション (Requirements)': {
+      'プロダクト概要': { required: false },
+      '共通・技術スタック': { required: false },
+      '要求マップ': {
+        required: false,
         table: {
-          idColumn: 'ID',
-          requiredColumns: ['ID', '内容', '背景・詳細', '状態'],
+          idColumn: '要求ID',
+          requiredColumns: ['要求ID', '要求内容', '状態'],
         },
       },
-      '非機能要求セクション (Non-Functional Requirements)': {
+      '横断的要件・非機能要求': {
         required: false,
         table: {
           idColumn: 'ID',
           requiredColumns: ['ID', '項目', '内容', '状態'],
-        },
-      },
-      '詳細要件セクション (Specifications)': {
-        table: {
-          idColumn: 'ID',
-          parentColumn: '親要求ID',
-          requiredColumns: ['ID', '親要求ID', '内容', '優先度', '状態'],
-        },
-      },
-      '変更履歴 (Change History)': { required: false },
-    },
-  },
-  'functions.md': {
-    title: '機能・構造定義書 (Functions & Components)',
-    sections: {
-      '採用検討ライブラリ・外部依存 (Recommended Libraries & Dependencies)': { required: false },
-      '機能セクション (Functions)': {
-        table: {
-          idColumn: 'ID',
-          relatedColumn: '関連要件ID',
-          requiredColumns: ['ID', '機能名', '内容・詳細ロジック', '関連要件ID', '状態'],
-        },
-      },
-      '論理構造セクション (Components)': {
-        table: {
-          idColumn: 'ID',
-          relatedColumn: '関連機能ID',
-          fileColumn: '構成ファイル',
-          requiredColumns: ['ID', 'コンポーネント名', '役割・責務', '関連機能ID', '構成ファイル'],
         },
       },
     },
@@ -95,15 +68,16 @@ export const SCHEMAS: Record<string, DocumentSchemaType> = {
   'architecture.md': {
     title: '物理構造定義書 (System Architecture)',
     sections: {
-      'ユニット集約セクション (Units)': {
+      '設計方針': { required: false },
+      'アーキテクチャ構成図': { required: false },
+      'ユニット集約セクション': {
         table: {
           idColumn: 'ID',
-          relatedColumn: '包含する論理ID',
           fileColumn: '物理パス',
-          requiredColumns: ['ID', 'ユニット名', '役割・責務', '包含する論理ID', '物理パス'],
+          requiredColumns: ['ID', 'ユニット名', '役割・責務', '物理パス'],
         },
       },
-      'コンポーネント構造セクション (Components)': {
+      'コンポーネント構造セクション': {
         table: {
           idColumn: 'ID',
           relatedColumn: '包含するユニットID',
@@ -111,28 +85,22 @@ export const SCHEMAS: Record<string, DocumentSchemaType> = {
           requiredColumns: ['ID', 'コンポーネント名', '概要', '包含するユニットID', '物理パス'],
         },
       },
-      '依存関係セクション (Dependencies)': {
+      '依存関係セクション': {
         table: {
           idColumn: 'ID',
           requiredColumns: ['ID', '種別', 'ソース (From)', 'ターゲット (To)', '理由・性質'],
         },
       },
-      '変更履歴': { required: false },
     },
   },
-  'TEST-XXX.md': {
-    title: /^結合試験書: \[TEST-\d{3,4}\].*$/,
+  'REQ-XXX.md': {
+    title: /^#? ?\[REQ-\d{3,4}\].*$/,
     sections: {
-      '対象要件・機能': {
-        listIds: true,
-      },
-      '試験目的': { required: false },
-      '試験項目一覧': {
-        table: {
-          idColumn: '項目ID',
-          requiredColumns: ['項目ID', 'シナリオ種別', '試験項目名', '合否判定基準', '状態'],
-        },
-      },
+      '要求概要': { required: false },
+      'ロバストネス分析': { required: false },
+      '詳細要件': { required: false, listIds: true },
+      '論理データ定義': { required: false, listIds: true },
+      '機能設計': { required: false, listIds: true },
     },
   },
   'SPEC-XXX.md': {
@@ -169,6 +137,21 @@ export const SCHEMAS: Record<string, DocumentSchemaType> = {
       '関連ドキュメント': {
         required: false,
         listIds: true,
+      },
+    },
+  },
+  'TEST-XXX.md': {
+    title: /^結合試験書: \[TEST-\d{3,4}\].*$/,
+    sections: {
+      '対象要件・機能': {
+        listIds: true,
+      },
+      '試験目的': { required: false },
+      '試験項目一覧': {
+        table: {
+          idColumn: '項目ID',
+          requiredColumns: ['項目ID', 'シナリオ種別', '試験項目名', '合否判定基準', '状態'],
+        },
       },
     },
   },

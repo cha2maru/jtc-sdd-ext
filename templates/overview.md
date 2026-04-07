@@ -17,6 +17,6 @@
 
 ## 成果物 (Planned)
 - [ ] 要求・要件定義書 (requirements.md)
-- [ ] 機能・構造定義書 (functions.md)
+- [ ] 物理構造定義書 (architecture.md)
 - [ ] 試験仕様書 (tests/)
 - [ ] プロトタイプ/実装コード

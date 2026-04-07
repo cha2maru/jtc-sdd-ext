@@ -4,15 +4,19 @@ import { MarkdownParser } from './parser.js';
 import { ProjectValidator } from './validator.js';
 import { SCHEMAS } from './schemas.js';
 import { TestExporter } from './exporter.js';
+import { SourceScanner } from './source-scanner.js';
+import { DependencyExtractor } from './dependency-extractor.js';
 
 async function main() {
   const args = process.argv.slice(2);
   console.log(`DEBUG: args=${args}`);
   const projectDir = args.find(a => !a.startsWith('--'));
   const exportPath = args.includes('--export') ? args[args.indexOf('--export') + 1] : null;
+  const sourceDirArg = args.includes('--source') ? args[args.indexOf('--source') + 1] : null;
+  const tracePath = args.includes('--trace') ? args[args.indexOf('--trace') + 1] : null;
 
   if (!projectDir) {
-    console.error('Usage: node main.js <project_directory> [--export <csv_path>]');
+    console.error('Usage: node main.js <project_directory> [--export <csv_path>] [--source <source_directory>] [--trace <report_base_name>]');
     process.exit(1);
   }
 
@@ -35,6 +39,8 @@ async function main() {
     if (fs.existsSync(dir)) {
       const files = fs.readdirSync(dir)
         .filter(f => f.endsWith('.md'))
+        // 生成されたファイルを除外
+        .filter(f => !f.includes('traceability-report') && !f.includes('exported'))
         .map(f => ({ path: path.join(dir, f), name: f }));
       console.log(`DEBUG: Found ${files.length} files in ${dir}`);
       allFiles.push(...files);
@@ -59,6 +65,8 @@ async function main() {
         schemaName = 'TEST-XXX.md';
       } else if (baseName.startsWith('ACC-')) {
         schemaName = 'ACC-XXX.md';
+      } else if (baseName.startsWith('REQ-')) {
+        schemaName = 'REQ-XXX.md';
       } else {
         // ファイル名でマッチしない場合、H1タイトルから推測
         const h1Match = content.match(/^# (?:結合試験書|総合試験書|詳細仕様書): \[(TEST|ACC|SPEC)-\d{3,4}\].*$/m);
@@ -72,14 +80,32 @@ async function main() {
       return null;
     }
 
-    const result = await parser.parse(content, schemaName);
-    result.file = file.path; // 表示用にフルパスをセット
+    const result = await parser.parse(content, file.path, schemaName);
     return result;
   });
 
   const results = (await Promise.all(parsePromises)).filter((r): r is NonNullable<typeof r> => r !== null);
 
-  const issues = validator.validate(results, projectDir);
+  // ソースコードスキャン
+  let sourceIds: any[] = [];
+  if (sourceDirArg) {
+    const scanner = new SourceScanner();
+    const resolvedSourceDir = path.resolve(process.cwd(), sourceDirArg);
+    console.log(`🔍 ソースコードをスキャン中: ${resolvedSourceDir}`);
+    sourceIds = await scanner.scan(resolvedSourceDir);
+    console.log(`✅ ソースコードから ${sourceIds.length} 個のIDを抽出しました。`);
+  }
+
+  const issues = validator.validate(results, projectDir, sourceIds);
+
+  // トレーサビリティレポート
+  if (tracePath && sourceIds.length > 0) {
+    const extractor = new DependencyExtractor();
+    const map = extractor.extractMap(results, sourceIds, projectDir, issues);
+    extractor.saveAsJson(map, `${tracePath}.json`);
+    extractor.saveAsMarkdown(map, `${tracePath}.md`);
+    console.log(`📜 トレーサビリティレポートを作成しました: ${tracePath}.md, ${tracePath}.json`);
+  }
 
   // CSVエクスポート
   if (exportPath) {

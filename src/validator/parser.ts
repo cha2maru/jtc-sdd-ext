@@ -8,12 +8,12 @@ import { DocumentSchemaType, SCHEMAS, TableSchemaType } from './schemas.js';
 export interface ExtractedId {
   id: string;
   isDefinition: boolean;
-  parentId?: string;
-  relatedIds?: string[];
-  files?: string[];
+  parentId?: string | undefined;
+  relatedIds?: string[] | undefined;
+  files?: string[] | undefined;
   file: string;
   line: number;
-  metadata?: Record<string, string>;
+  metadata?: Record<string, string> | undefined;
 }
 
 export interface ParseResult {
@@ -34,10 +34,12 @@ export interface ParseResult {
 export class MarkdownParser {
   private processor = unified().use(remarkParse).use(remarkGfm);
 
-  async parse(fileContent: string, fileName: string): Promise<ParseResult> {
+  async parse(fileContent: string, fileName: string, schemaName?: string): Promise<ParseResult> {
     const tree = this.processor.parse(fileContent) as Root;
     const baseName = path.basename(fileName);
-    const schema = SCHEMAS[baseName as keyof typeof SCHEMAS];
+    const effectiveSchemaName = schemaName || baseName;
+    const schema = SCHEMAS[effectiveSchemaName as keyof typeof SCHEMAS];
+    
     const result: ParseResult = {
       file: fileName,
       sectionsFound: [],
@@ -48,35 +50,48 @@ export class MarkdownParser {
 
     let activeSchemaSection: string | null = null;
     let currentSection: string | null = null;
+    let currentFileParentId: string | null = null;
 
     for (const node of tree.children) {
       // Heading (H1, H2, H3)
       if (node.type === 'heading') {
         const text = this.getTextContent(node);
         console.log(`DEBUG: Heading found: depth=${node.depth}, text="${text}"`);
+        
+        // ID抽出
+        const foundId = this.extractIdFromText(text, true, node.position?.start.line || 0, fileName, result);
+        
         if (node.depth === 1) {
           result.title = text;
+          if (foundId) currentFileParentId = foundId;
+          
           // スキーマチェック
           if (schema) {
             const isMatch = schema.title instanceof RegExp ? schema.title.test(text) : text === schema.title;
             if (!isMatch) result.errors.push(`H1タイトルが一致しません: 期待="${String(schema.title)}", 実際="${text}"`);
           }
-          // ID抽出
-          this.extractIdFromText(text, true, node.position?.start.line || 0, fileName, result);
         } else {
+          // H1 以外で見つかった ID に親 ID を自動設定
+          if (currentFileParentId && foundId && foundId !== currentFileParentId) {
+            const lastExtracted = result.ids[result.ids.length - 1];
+            if (lastExtracted && lastExtracted.id === foundId) {
+              lastExtracted.parentId = currentFileParentId;
+            }
+          }
+
           currentSection = text;
           result.sectionsFound.push(text);
           result.detailedSections.push({ heading: text, level: node.depth });
 
           // スキーマに定義されているセクション名かチェック
           if (schema) {
-            const matchedKey = Object.keys(schema.sections).find(key => 
-              text.includes(key) || key.includes(text)
-            );
+            const matchedKey = Object.keys(schema.sections).find(key => {
+              const found = text.includes(key) || key.includes(text);
+              return found;
+            });
             if (matchedKey) {
               activeSchemaSection = matchedKey;
             } else if (node.depth <= 2) {
-              // 同レベル以上の未知のセクションが来たらリセット
               activeSchemaSection = null;
             }
           }
@@ -93,9 +108,13 @@ export class MarkdownParser {
         if (activeSchemaSection && schema?.sections) {
           const sectionConfig = schema.sections[activeSchemaSection];
           if (sectionConfig?.table) {
-            const tableResult = this.parseTable(node, sectionConfig.table, fileName);
+            if (!result.sectionsFound.includes(activeSchemaSection)) {
+              result.sectionsFound.push(activeSchemaSection);
+            }
+            
+            const tableResult = this.parseTable(node, sectionConfig.table, fileName, currentFileParentId);
             result.ids.push(...tableResult.ids);
-            result.errors.push(...tableResult.errors.map(err => `[${currentSection}] ${err}`));
+            result.errors.push(...tableResult.errors.map(err => `[${activeSchemaSection}] ${err}`));
           }
         }
       }
@@ -110,7 +129,7 @@ export class MarkdownParser {
         if (activeSchemaSection && schema?.sections) {
           const sectionConfig = schema.sections[activeSchemaSection];
           if (sectionConfig?.listIds) {
-            this.extractIdsFromList(items, fileName, node.position?.start.line || 0, result);
+            this.extractIdsFromList(items, fileName, node.position?.start.line || 0, result, currentFileParentId);
           }
         }
       }
@@ -128,33 +147,40 @@ export class MarkdownParser {
     return result;
   }
 
-  private extractIdFromText(text: string, isDef: boolean, line: number, file: string, result: ParseResult) {
-    const match = text.match(/([A-Z]+-[\d]+(?:-[A-Z0-9]+)?)/);
+  private extractIdFromText(text: string, isDef: boolean, line: number, file: string, result: ParseResult): string | null {
+    const match = text.match(/([A-Z]+-[A-Z0-9]+(?:-[A-Z0-9-]+)*)/);
     if (match && !match[0].includes('XXX') && match[0] !== '[ID]') {
-      result.ids.push({ id: match[0], isDefinition: isDef, file, line });
+      const id = match[0];
+      result.ids.push({ id, isDefinition: isDef, file, line });
+      return id;
     }
+    return null;
   }
 
-  private extractIdsFromList(items: string[], file: string, line: number, result: ParseResult) {
+  private extractIdsFromList(items: string[], file: string, line: number, result: ParseResult, defaultParentId: string | null) {
     for (const item of items) {
-      const matches = item.matchAll(/([A-Z]+-[\d]+(?:-[A-Z0-9]+)?)/g);
+      const matches = item.matchAll(/([A-Z]+-[A-Z0-9]+(?:-[A-Z0-9-]+)*)/g);
       for (const m of matches) {
         if (!m[0].includes('XXX') && m[0] !== '[ID]') {
-          result.ids.push({ id: m[0], isDefinition: false, file, line });
+          result.ids.push({ 
+            id: m[0], 
+            isDefinition: false, 
+            file, 
+            line, 
+            parentId: defaultParentId || undefined 
+          });
         }
       }
     }
   }
 
-  private parseTable(node: Table, schema: TableSchemaType, fileName: string) {
+  private parseTable(node: Table, schema: TableSchemaType, fileName: string, fileParentId: string | null) {
     const result = { ids: [] as ExtractedId[], errors: [] as string[] };
     const rows = node.children;
     if (rows.length === 0) return result;
 
     const headers = rows[0]!.children.map(cell => this.getTextContent(cell).trim());
-    console.log(`DEBUG: Table headers: [${headers.join(', ')}]`);
     const idIdx = headers.indexOf(schema.idColumn);
-    console.log(`DEBUG: idIdx=${idIdx} for idColumn="${schema.idColumn}"`);
     const parentIdx = schema.parentColumn ? headers.indexOf(schema.parentColumn) : -1;
     const relatedIdx = schema.relatedColumn ? headers.indexOf(schema.relatedColumn) : -1;
     const fileIdx = schema.fileColumn ? headers.indexOf(schema.fileColumn) : -1;
@@ -175,6 +201,12 @@ export class MarkdownParser {
         const cell = cells[parentIdx];
         if (cell) extracted.parentId = this.getTextContent(cell).trim();
       }
+      
+      // テーブル内に明示的な親IDがない場合、ファイルレベルの親IDを適用
+      if (!extracted.parentId && fileParentId && id !== fileParentId) {
+        extracted.parentId = fileParentId;
+      }
+
       if (relatedIdx !== -1) {
         const cell = cells[relatedIdx];
         if (cell) {
@@ -194,7 +226,8 @@ export class MarkdownParser {
         const cell = cells[j];
         const header = headers[j];
         if (cell && header && extracted.metadata) {
-          extracted.metadata[header] = this.getTextContent(cell).trim();
+          const val = this.getTextContent(cell).trim();
+          extracted.metadata[header] = val;
         }
       }
       result.ids.push(extracted);
@@ -210,4 +243,3 @@ export class MarkdownParser {
     return '';
   }
 }
-
