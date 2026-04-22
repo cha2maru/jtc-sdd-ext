@@ -1,0 +1,1162 @@
+{
+  "logicView": [
+    {
+      "req": {
+        "id": "REQ-001",
+        "type": "Requirement",
+        "document": "requirements.md",
+        "line": 21,
+        "implemented": false,
+        "relatedIds": [],
+        "metadata": {
+          "要求ID": "REQ-001",
+          "要求内容": "ボードゲームの登録",
+          "状態": "完了",
+          "詳細要件 (SPEC) のプレビュー": "SPEC-001-01, 02, 03",
+          "リンク": "詳細へ"
+        },
+        "sources": []
+      },
+      "spec": {
+        "id": "SPEC-001-01",
+        "type": "Specification",
+        "document": "REQ-001.md",
+        "line": 35,
+        "implemented": true,
+        "parentId": "REQ-001",
+        "relatedIds": [],
+        "metadata": {},
+        "sources": [
+          {
+            "file": "src/cli/MainCli.ts",
+            "line": 70,
+            "context": "// @logic [SPEC-001-01] 登録入力インターフェースの実装"
+          }
+        ]
+      },
+      "func": {
+        "id": "FUNC-001-01-01",
+        "type": "Function",
+        "document": "REQ-001.md",
+        "line": 56,
+        "implemented": true,
+        "parentId": "REQ-001",
+        "relatedIds": [],
+        "metadata": {},
+        "sources": [
+          {
+            "file": "src/entities/BoardGame.ts",
+            "line": 28,
+            "context": "// @logic [FUNC-001-01-01] 入力バリデーション"
+          }
+        ]
+      }
+    },
+    {
+      "req": {
+        "id": "REQ-001",
+        "type": "Requirement",
+        "document": "requirements.md",
+        "line": 21,
+        "implemented": false,
+        "relatedIds": [],
+        "metadata": {
+          "要求ID": "REQ-001",
+          "要求内容": "ボードゲームの登録",
+          "状態": "完了",
+          "詳細要件 (SPEC) のプレビュー": "SPEC-001-01, 02, 03",
+          "リンク": "詳細へ"
+        },
+        "sources": []
+      },
+      "spec": {
+        "id": "SPEC-001-01",
+        "type": "Specification",
+        "document": "REQ-001.md",
+        "line": 35,
+        "implemented": true,
+        "parentId": "REQ-001",
+        "relatedIds": [],
+        "metadata": {},
+        "sources": [
+          {
+            "file": "src/cli/MainCli.ts",
+            "line": 70,
+            "context": "// @logic [SPEC-001-01] 登録入力インターフェースの実装"
+          }
+        ]
+      },
+      "func": {
+        "id": "FUNC-001-01-02",
+        "type": "Function",
+        "document": "REQ-001.md",
+        "line": 61,
+        "implemented": true,
+        "parentId": "REQ-001",
+        "relatedIds": [],
+        "metadata": {},
+        "sources": [
+          {
+            "file": "src/repositories/BoardGameRepository.ts",
+            "line": 7,
+            "context": "* [FUNC-001-01-02] 登録処理の一部"
+          },
+          {
+            "file": "src/services/BoardGameService.ts",
+            "line": 10,
+            "context": "// @logic [FUNC-001-01-02] 登録処理"
+          }
+        ]
+      }
+    },
+    {
+      "req": {
+        "id": "REQ-001",
+        "type": "Requirement",
+        "document": "requirements.md",
+        "line": 21,
+        "implemented": false,
+        "relatedIds": [],
+        "metadata": {
+          "要求ID": "REQ-001",
+          "要求内容": "ボードゲームの登録",
+          "状態": "完了",
+          "詳細要件 (SPEC) のプレビュー": "SPEC-001-01, 02, 03",
+          "リンク": "詳細へ"
+        },
+        "sources": []
+      },
+      "spec": {
+        "id": "SPEC-001-01",
+        "type": "Specification",
+        "document": "REQ-001.md",
+        "line": 35,
+        "implemented": true,
+        "parentId": "REQ-001",
+        "relatedIds": [],
+        "metadata": {},
+        "sources": [
+          {
+            "file": "src/cli/MainCli.ts",
+            "line": 70,
+            "context": "// @logic [SPEC-001-01] 登録入力インターフェースの実装"
+          }
+        ]
+      },
+      "func": {
+        "id": "FUNC-001-01-03",
+        "type": "Function",
+        "document": "REQ-001.md",
+        "line": 66,
+        "implemented": true,
+        "parentId": "REQ-001",
+        "relatedIds": [],
+        "metadata": {},
+        "sources": [
+          {
+            "file": "src/cli/MainCli.ts",
+            "line": 65,
+            "context": "// @logic [FUNC-001-01-03] 入力エラー通知"
+          }
+        ]
+      }
+    },
+    {
+      "req": {
+        "id": "REQ-001",
+        "type": "Requirement",
+        "document": "requirements.md",
+        "line": 21,
+        "implemented": false,
+        "relatedIds": [],
+        "metadata": {
+          "要求ID": "REQ-001",
+          "要求内容": "ボードゲームの登録",
+          "状態": "完了",
+          "詳細要件 (SPEC) のプレビュー": "SPEC-001-01, 02, 03",
+          "リンク": "詳細へ"
+        },
+        "sources": []
+      },
+      "spec": {
+        "id": "SPEC-001-02",
+        "type": "Specification",
+        "document": "REQ-001.md",
+        "line": 40,
+        "implemented": false,
+        "parentId": "REQ-001",
+        "relatedIds": [],
+        "metadata": {},
+        "sources": []
+      },
+      "func": null
+    },
+    {
+      "req": {
+        "id": "REQ-001",
+        "type": "Requirement",
+        "document": "requirements.md",
+        "line": 21,
+        "implemented": false,
+        "relatedIds": [],
+        "metadata": {
+          "要求ID": "REQ-001",
+          "要求内容": "ボードゲームの登録",
+          "状態": "完了",
+          "詳細要件 (SPEC) のプレビュー": "SPEC-001-01, 02, 03",
+          "リンク": "詳細へ"
+        },
+        "sources": []
+      },
+      "spec": {
+        "id": "SPEC-001-03",
+        "type": "Specification",
+        "document": "REQ-001.md",
+        "line": 45,
+        "implemented": false,
+        "parentId": "REQ-001",
+        "relatedIds": [],
+        "metadata": {},
+        "sources": []
+      },
+      "func": null
+    },
+    {
+      "req": {
+        "id": "REQ-002",
+        "type": "Requirement",
+        "document": "requirements.md",
+        "line": 21,
+        "implemented": false,
+        "relatedIds": [],
+        "metadata": {
+          "要求ID": "REQ-002",
+          "要求内容": "ボードゲームの一覧表示",
+          "状態": "完了",
+          "詳細要件 (SPEC) のプレビュー": "SPEC-002-01, 02",
+          "リンク": "詳細へ"
+        },
+        "sources": []
+      },
+      "spec": {
+        "id": "SPEC-002-01",
+        "type": "Specification",
+        "document": "REQ-002.md",
+        "line": 23,
+        "implemented": false,
+        "parentId": "REQ-002",
+        "relatedIds": [],
+        "metadata": {},
+        "sources": []
+      },
+      "func": {
+        "id": "FUNC-002-01-01",
+        "type": "Function",
+        "document": "REQ-002.md",
+        "line": 34,
+        "implemented": true,
+        "parentId": "REQ-002",
+        "relatedIds": [],
+        "metadata": {},
+        "sources": [
+          {
+            "file": "src/repositories/BoardGameRepository.ts",
+            "line": 8,
+            "context": "* [FUNC-002-01-01] 一覧取得ロジック"
+          },
+          {
+            "file": "src/services/BoardGameService.ts",
+            "line": 17,
+            "context": "// @logic [FUNC-002-01-01] 一覧取得ロジック"
+          }
+        ]
+      }
+    },
+    {
+      "req": {
+        "id": "REQ-002",
+        "type": "Requirement",
+        "document": "requirements.md",
+        "line": 21,
+        "implemented": false,
+        "relatedIds": [],
+        "metadata": {
+          "要求ID": "REQ-002",
+          "要求内容": "ボードゲームの一覧表示",
+          "状態": "完了",
+          "詳細要件 (SPEC) のプレビュー": "SPEC-002-01, 02",
+          "リンク": "詳細へ"
+        },
+        "sources": []
+      },
+      "spec": {
+        "id": "SPEC-002-01",
+        "type": "Specification",
+        "document": "REQ-002.md",
+        "line": 23,
+        "implemented": false,
+        "parentId": "REQ-002",
+        "relatedIds": [],
+        "metadata": {},
+        "sources": []
+      },
+      "func": {
+        "id": "FUNC-002-01-02",
+        "type": "Function",
+        "document": "REQ-002.md",
+        "line": 39,
+        "implemented": true,
+        "parentId": "REQ-002",
+        "relatedIds": [],
+        "metadata": {},
+        "sources": [
+          {
+            "file": "src/cli/MainCli.ts",
+            "line": 97,
+            "context": "// @logic [FUNC-002-01-02] 一覧表示の出力"
+          }
+        ]
+      }
+    },
+    {
+      "req": {
+        "id": "REQ-002",
+        "type": "Requirement",
+        "document": "requirements.md",
+        "line": 21,
+        "implemented": false,
+        "relatedIds": [],
+        "metadata": {
+          "要求ID": "REQ-002",
+          "要求内容": "ボードゲームの一覧表示",
+          "状態": "完了",
+          "詳細要件 (SPEC) のプレビュー": "SPEC-002-01, 02",
+          "リンク": "詳細へ"
+        },
+        "sources": []
+      },
+      "spec": {
+        "id": "SPEC-002-02",
+        "type": "Specification",
+        "document": "REQ-002.md",
+        "line": 28,
+        "implemented": false,
+        "parentId": "REQ-002",
+        "relatedIds": [],
+        "metadata": {},
+        "sources": []
+      },
+      "func": null
+    },
+    {
+      "req": {
+        "id": "REQ-003",
+        "type": "Requirement",
+        "document": "requirements.md",
+        "line": 21,
+        "implemented": false,
+        "relatedIds": [],
+        "metadata": {
+          "要求ID": "REQ-003",
+          "要求内容": "ボードゲームの検索・フィルタ",
+          "状態": "完了",
+          "詳細要件 (SPEC) のプレビュー": "SPEC-003-01, 02",
+          "リンク": "詳細へ"
+        },
+        "sources": []
+      },
+      "spec": {
+        "id": "SPEC-003-01",
+        "type": "Specification",
+        "document": "REQ-003.md",
+        "line": 23,
+        "implemented": false,
+        "parentId": "REQ-003",
+        "relatedIds": [],
+        "metadata": {},
+        "sources": []
+      },
+      "func": {
+        "id": "FUNC-003-01-01",
+        "type": "Function",
+        "document": "REQ-003.md",
+        "line": 34,
+        "implemented": true,
+        "parentId": "REQ-003",
+        "relatedIds": [],
+        "metadata": {},
+        "sources": [
+          {
+            "file": "src/services/BoardGameService.ts",
+            "line": 22,
+            "context": "// @logic [FUNC-003-01-01] フィルタリング機能"
+          }
+        ]
+      }
+    },
+    {
+      "req": {
+        "id": "REQ-003",
+        "type": "Requirement",
+        "document": "requirements.md",
+        "line": 21,
+        "implemented": false,
+        "relatedIds": [],
+        "metadata": {
+          "要求ID": "REQ-003",
+          "要求内容": "ボードゲームの検索・フィルタ",
+          "状態": "完了",
+          "詳細要件 (SPEC) のプレビュー": "SPEC-003-01, 02",
+          "リンク": "詳細へ"
+        },
+        "sources": []
+      },
+      "spec": {
+        "id": "SPEC-003-01",
+        "type": "Specification",
+        "document": "REQ-003.md",
+        "line": 23,
+        "implemented": false,
+        "parentId": "REQ-003",
+        "relatedIds": [],
+        "metadata": {},
+        "sources": []
+      },
+      "func": {
+        "id": "FUNC-003-01-02",
+        "type": "Function",
+        "document": "REQ-003.md",
+        "line": 39,
+        "implemented": true,
+        "parentId": "REQ-003",
+        "relatedIds": [],
+        "metadata": {},
+        "sources": [
+          {
+            "file": "src/cli/MainCli.ts",
+            "line": 118,
+            "context": "// @logic [FUNC-003-01-02] 検索結果なしの表示"
+          }
+        ]
+      }
+    },
+    {
+      "req": {
+        "id": "REQ-003",
+        "type": "Requirement",
+        "document": "requirements.md",
+        "line": 21,
+        "implemented": false,
+        "relatedIds": [],
+        "metadata": {
+          "要求ID": "REQ-003",
+          "要求内容": "ボードゲームの検索・フィルタ",
+          "状態": "完了",
+          "詳細要件 (SPEC) のプレビュー": "SPEC-003-01, 02",
+          "リンク": "詳細へ"
+        },
+        "sources": []
+      },
+      "spec": {
+        "id": "SPEC-003-02",
+        "type": "Specification",
+        "document": "REQ-003.md",
+        "line": 28,
+        "implemented": false,
+        "parentId": "REQ-003",
+        "relatedIds": [],
+        "metadata": {},
+        "sources": []
+      },
+      "func": null
+    },
+    {
+      "req": {
+        "id": "REQ-004",
+        "type": "Requirement",
+        "document": "requirements.md",
+        "line": 21,
+        "implemented": false,
+        "relatedIds": [],
+        "metadata": {
+          "要求ID": "REQ-004",
+          "要求内容": "プレイ履歴の記録",
+          "状態": "完了",
+          "詳細要件 (SPEC) のプレビュー": "SPEC-004-01, 02",
+          "リンク": "詳細へ"
+        },
+        "sources": []
+      },
+      "spec": {
+        "id": "SPEC-004-01",
+        "type": "Specification",
+        "document": "REQ-004.md",
+        "line": 21,
+        "implemented": false,
+        "parentId": "REQ-004",
+        "relatedIds": [],
+        "metadata": {},
+        "sources": []
+      },
+      "func": {
+        "id": "FUNC-004-01-01",
+        "type": "Function",
+        "document": "REQ-004.md",
+        "line": 37,
+        "implemented": true,
+        "parentId": "REQ-004",
+        "relatedIds": [],
+        "metadata": {},
+        "sources": [
+          {
+            "file": "src/entities/PlayRecord.ts",
+            "line": 28,
+            "context": "// @logic [FUNC-004-01-01] プレイ履歴管理機能の一部"
+          },
+          {
+            "file": "src/services/BoardGameService.ts",
+            "line": 31,
+            "context": "// @logic [FUNC-004-01-01] プレイ履歴管理機能"
+          }
+        ]
+      }
+    },
+    {
+      "req": {
+        "id": "REQ-004",
+        "type": "Requirement",
+        "document": "requirements.md",
+        "line": 21,
+        "implemented": false,
+        "relatedIds": [],
+        "metadata": {
+          "要求ID": "REQ-004",
+          "要求内容": "プレイ履歴の記録",
+          "状態": "完了",
+          "詳細要件 (SPEC) のプレビュー": "SPEC-004-01, 02",
+          "リンク": "詳細へ"
+        },
+        "sources": []
+      },
+      "spec": {
+        "id": "SPEC-004-01",
+        "type": "Specification",
+        "document": "REQ-004.md",
+        "line": 21,
+        "implemented": false,
+        "parentId": "REQ-004",
+        "relatedIds": [],
+        "metadata": {},
+        "sources": []
+      },
+      "func": {
+        "id": "FUNC-004-01-02",
+        "type": "Function",
+        "document": "REQ-004.md",
+        "line": 42,
+        "implemented": true,
+        "parentId": "REQ-004",
+        "relatedIds": [],
+        "metadata": {},
+        "sources": [
+          {
+            "file": "src/entities/PlayRecord.ts",
+            "line": 35,
+            "context": "// @logic [FUNC-004-01-02] 参加者人数のバリデーション"
+          }
+        ]
+      }
+    },
+    {
+      "req": {
+        "id": "REQ-004",
+        "type": "Requirement",
+        "document": "requirements.md",
+        "line": 21,
+        "implemented": false,
+        "relatedIds": [],
+        "metadata": {
+          "要求ID": "REQ-004",
+          "要求内容": "プレイ履歴の記録",
+          "状態": "完了",
+          "詳細要件 (SPEC) のプレビュー": "SPEC-004-01, 02",
+          "リンク": "詳細へ"
+        },
+        "sources": []
+      },
+      "spec": {
+        "id": "SPEC-004-02",
+        "type": "Specification",
+        "document": "REQ-004.md",
+        "line": 26,
+        "implemented": false,
+        "parentId": "REQ-004",
+        "relatedIds": [],
+        "metadata": {},
+        "sources": []
+      },
+      "func": null
+    },
+    {
+      "req": {
+        "id": "REQ-005",
+        "type": "Requirement",
+        "document": "requirements.md",
+        "line": 21,
+        "implemented": false,
+        "relatedIds": [],
+        "metadata": {
+          "要求ID": "REQ-005",
+          "要求内容": "貸出管理",
+          "状態": "完了",
+          "詳細要件 (SPEC) のプレビュー": "SPEC-005-01, 02",
+          "リンク": "詳細へ"
+        },
+        "sources": []
+      },
+      "spec": {
+        "id": "SPEC-005-01",
+        "type": "Specification",
+        "document": "REQ-005.md",
+        "line": 21,
+        "implemented": false,
+        "parentId": "REQ-005",
+        "relatedIds": [],
+        "metadata": {},
+        "sources": []
+      },
+      "func": {
+        "id": "FUNC-005-01-01",
+        "type": "Function",
+        "document": "REQ-005.md",
+        "line": 37,
+        "implemented": true,
+        "parentId": "REQ-005",
+        "relatedIds": [],
+        "metadata": {},
+        "sources": [
+          {
+            "file": "src/entities/LendingRecord.ts",
+            "line": 26,
+            "context": "// @logic [FUNC-005-01-01] 貸出状態管理機能の一部"
+          },
+          {
+            "file": "src/services/BoardGameService.ts",
+            "line": 46,
+            "context": "// @logic [FUNC-005-01-01] 貸出状態管理機能"
+          }
+        ]
+      }
+    },
+    {
+      "req": {
+        "id": "REQ-005",
+        "type": "Requirement",
+        "document": "requirements.md",
+        "line": 21,
+        "implemented": false,
+        "relatedIds": [],
+        "metadata": {
+          "要求ID": "REQ-005",
+          "要求内容": "貸出管理",
+          "状態": "完了",
+          "詳細要件 (SPEC) のプレビュー": "SPEC-005-01, 02",
+          "リンク": "詳細へ"
+        },
+        "sources": []
+      },
+      "spec": {
+        "id": "SPEC-005-01",
+        "type": "Specification",
+        "document": "REQ-005.md",
+        "line": 21,
+        "implemented": false,
+        "parentId": "REQ-005",
+        "relatedIds": [],
+        "metadata": {},
+        "sources": []
+      },
+      "func": {
+        "id": "FUNC-005-01-02",
+        "type": "Function",
+        "document": "REQ-005.md",
+        "line": 42,
+        "implemented": true,
+        "parentId": "REQ-005",
+        "relatedIds": [],
+        "metadata": {},
+        "sources": [
+          {
+            "file": "src/services/BoardGameService.ts",
+            "line": 54,
+            "context": "// @logic [FUNC-005-01-02] 重複貸出の防止"
+          }
+        ]
+      }
+    },
+    {
+      "req": {
+        "id": "REQ-005",
+        "type": "Requirement",
+        "document": "requirements.md",
+        "line": 21,
+        "implemented": false,
+        "relatedIds": [],
+        "metadata": {
+          "要求ID": "REQ-005",
+          "要求内容": "貸出管理",
+          "状態": "完了",
+          "詳細要件 (SPEC) のプレビュー": "SPEC-005-01, 02",
+          "リンク": "詳細へ"
+        },
+        "sources": []
+      },
+      "spec": {
+        "id": "SPEC-005-02",
+        "type": "Specification",
+        "document": "REQ-005.md",
+        "line": 26,
+        "implemented": false,
+        "parentId": "REQ-005",
+        "relatedIds": [],
+        "metadata": {},
+        "sources": []
+      },
+      "func": null
+    },
+    {
+      "req": {
+        "id": "REQ-006",
+        "type": "Requirement",
+        "document": "requirements.md",
+        "line": 21,
+        "implemented": false,
+        "relatedIds": [],
+        "metadata": {
+          "要求ID": "REQ-006",
+          "要求内容": "データ永続化",
+          "状態": "完了",
+          "詳細要件 (SPEC) のプレビュー": "SPEC-006-01, 02",
+          "リンク": "詳細へ"
+        },
+        "sources": []
+      },
+      "spec": {
+        "id": "SPEC-006-01",
+        "type": "Specification",
+        "document": "REQ-006.md",
+        "line": 20,
+        "implemented": false,
+        "parentId": "REQ-006",
+        "relatedIds": [],
+        "metadata": {},
+        "sources": []
+      },
+      "func": {
+        "id": "FUNC-006-01-01",
+        "type": "Function",
+        "document": "REQ-006.md",
+        "line": 31,
+        "implemented": true,
+        "parentId": "REQ-006",
+        "relatedIds": [],
+        "metadata": {},
+        "sources": [
+          {
+            "file": "src/storage/JsonStorage.ts",
+            "line": 19,
+            "context": "* [FUNC-006-01-01] データ永続化ロジック"
+          }
+        ]
+      }
+    },
+    {
+      "req": {
+        "id": "REQ-006",
+        "type": "Requirement",
+        "document": "requirements.md",
+        "line": 21,
+        "implemented": false,
+        "relatedIds": [],
+        "metadata": {
+          "要求ID": "REQ-006",
+          "要求内容": "データ永続化",
+          "状態": "完了",
+          "詳細要件 (SPEC) のプレビュー": "SPEC-006-01, 02",
+          "リンク": "詳細へ"
+        },
+        "sources": []
+      },
+      "spec": {
+        "id": "SPEC-006-01",
+        "type": "Specification",
+        "document": "REQ-006.md",
+        "line": 20,
+        "implemented": false,
+        "parentId": "REQ-006",
+        "relatedIds": [],
+        "metadata": {},
+        "sources": []
+      },
+      "func": {
+        "id": "FUNC-006-01-02",
+        "type": "Function",
+        "document": "REQ-006.md",
+        "line": 36,
+        "implemented": true,
+        "parentId": "REQ-006",
+        "relatedIds": [],
+        "metadata": {},
+        "sources": [
+          {
+            "file": "src/storage/JsonStorage.ts",
+            "line": 27,
+            "context": "// @logic [FUNC-006-01-02] デフォルトデータの定義"
+          }
+        ]
+      }
+    },
+    {
+      "req": {
+        "id": "REQ-006",
+        "type": "Requirement",
+        "document": "requirements.md",
+        "line": 21,
+        "implemented": false,
+        "relatedIds": [],
+        "metadata": {
+          "要求ID": "REQ-006",
+          "要求内容": "データ永続化",
+          "状態": "完了",
+          "詳細要件 (SPEC) のプレビュー": "SPEC-006-01, 02",
+          "リンク": "詳細へ"
+        },
+        "sources": []
+      },
+      "spec": {
+        "id": "SPEC-006-02",
+        "type": "Specification",
+        "document": "REQ-006.md",
+        "line": 25,
+        "implemented": false,
+        "parentId": "REQ-006",
+        "relatedIds": [],
+        "metadata": {},
+        "sources": []
+      },
+      "func": null
+    }
+  ],
+  "physicalView": [
+    {
+      "comp": {
+        "id": "COMP-DOMAIN",
+        "type": "Component",
+        "document": "architecture.md",
+        "line": 65,
+        "implemented": false,
+        "relatedIds": [
+          "UNIT-BG-ENTITY",
+          "UNIT-PR-ENTITY",
+          "UNIT-LR-ENTITY",
+          "UNIT-SVC"
+        ],
+        "metadata": {
+          "ID": "COMP-DOMAIN",
+          "コンポーネント名": "Domain Layer",
+          "概要": "エンティティとビジネスロジックの中核。",
+          "包含するユニットID": "UNIT-BG-ENTITY, UNIT-PR-ENTITY, UNIT-LR-ENTITY, UNIT-SVC",
+          "物理パス": "src/entities/, src/services/"
+        },
+        "sources": []
+      },
+      "unit": {
+        "id": "UNIT-BG-ENTITY",
+        "type": "Unit",
+        "document": "architecture.md",
+        "line": 52,
+        "implemented": true,
+        "relatedIds": [],
+        "metadata": {
+          "ID": "UNIT-BG-ENTITY",
+          "ユニット名": "BoardGame Entity",
+          "役割・責務": "ボードゲーム情報のデータ構造とバリデーション。",
+          "物理パス": "src/entities/BoardGame.ts"
+        },
+        "sources": [
+          {
+            "file": "src/entities/BoardGame.ts",
+            "line": 16,
+            "context": "// @unit [UNIT-BG-ENTITY]"
+          }
+        ]
+      },
+      "func": null
+    },
+    {
+      "comp": {
+        "id": "COMP-DOMAIN",
+        "type": "Component",
+        "document": "architecture.md",
+        "line": 65,
+        "implemented": false,
+        "relatedIds": [
+          "UNIT-BG-ENTITY",
+          "UNIT-PR-ENTITY",
+          "UNIT-LR-ENTITY",
+          "UNIT-SVC"
+        ],
+        "metadata": {
+          "ID": "COMP-DOMAIN",
+          "コンポーネント名": "Domain Layer",
+          "概要": "エンティティとビジネスロジックの中核。",
+          "包含するユニットID": "UNIT-BG-ENTITY, UNIT-PR-ENTITY, UNIT-LR-ENTITY, UNIT-SVC",
+          "物理パス": "src/entities/, src/services/"
+        },
+        "sources": []
+      },
+      "unit": {
+        "id": "UNIT-PR-ENTITY",
+        "type": "Unit",
+        "document": "architecture.md",
+        "line": 52,
+        "implemented": true,
+        "relatedIds": [],
+        "metadata": {
+          "ID": "UNIT-PR-ENTITY",
+          "ユニット名": "PlayRecord Entity",
+          "役割・責務": "プレイ履歴のデータ構造。",
+          "物理パス": "src/entities/PlayRecord.ts"
+        },
+        "sources": [
+          {
+            "file": "src/entities/PlayRecord.ts",
+            "line": 16,
+            "context": "// @unit [UNIT-PR-ENTITY]"
+          }
+        ]
+      },
+      "func": null
+    },
+    {
+      "comp": {
+        "id": "COMP-DOMAIN",
+        "type": "Component",
+        "document": "architecture.md",
+        "line": 65,
+        "implemented": false,
+        "relatedIds": [
+          "UNIT-BG-ENTITY",
+          "UNIT-PR-ENTITY",
+          "UNIT-LR-ENTITY",
+          "UNIT-SVC"
+        ],
+        "metadata": {
+          "ID": "COMP-DOMAIN",
+          "コンポーネント名": "Domain Layer",
+          "概要": "エンティティとビジネスロジックの中核。",
+          "包含するユニットID": "UNIT-BG-ENTITY, UNIT-PR-ENTITY, UNIT-LR-ENTITY, UNIT-SVC",
+          "物理パス": "src/entities/, src/services/"
+        },
+        "sources": []
+      },
+      "unit": {
+        "id": "UNIT-LR-ENTITY",
+        "type": "Unit",
+        "document": "architecture.md",
+        "line": 52,
+        "implemented": true,
+        "relatedIds": [],
+        "metadata": {
+          "ID": "UNIT-LR-ENTITY",
+          "ユニット名": "LendingRecord Entity",
+          "役割・責務": "貸出情報のデータ構造。",
+          "物理パス": "src/entities/LendingRecord.ts"
+        },
+        "sources": [
+          {
+            "file": "src/entities/LendingRecord.ts",
+            "line": 15,
+            "context": "// @unit [UNIT-LR-ENTITY]"
+          }
+        ]
+      },
+      "func": null
+    },
+    {
+      "comp": {
+        "id": "COMP-DOMAIN",
+        "type": "Component",
+        "document": "architecture.md",
+        "line": 65,
+        "implemented": false,
+        "relatedIds": [
+          "UNIT-BG-ENTITY",
+          "UNIT-PR-ENTITY",
+          "UNIT-LR-ENTITY",
+          "UNIT-SVC"
+        ],
+        "metadata": {
+          "ID": "COMP-DOMAIN",
+          "コンポーネント名": "Domain Layer",
+          "概要": "エンティティとビジネスロジックの中核。",
+          "包含するユニットID": "UNIT-BG-ENTITY, UNIT-PR-ENTITY, UNIT-LR-ENTITY, UNIT-SVC",
+          "物理パス": "src/entities/, src/services/"
+        },
+        "sources": []
+      },
+      "unit": {
+        "id": "UNIT-SVC",
+        "type": "Unit",
+        "document": "architecture.md",
+        "line": 52,
+        "implemented": true,
+        "relatedIds": [],
+        "metadata": {
+          "ID": "UNIT-SVC",
+          "ユニット名": "BG Service",
+          "役割・責務": "ビジネスロジック。要求パッケージのロジックを統合。",
+          "物理パス": "src/services/BoardGameService.ts"
+        },
+        "sources": [
+          {
+            "file": "src/services/BoardGameService.ts",
+            "line": 6,
+            "context": "// @unit [UNIT-SVC]"
+          }
+        ]
+      },
+      "func": null
+    },
+    {
+      "comp": {
+        "id": "COMP-INFRA",
+        "type": "Component",
+        "document": "architecture.md",
+        "line": 65,
+        "implemented": false,
+        "relatedIds": [
+          "UNIT-REPO",
+          "UNIT-STORAGE"
+        ],
+        "metadata": {
+          "ID": "COMP-INFRA",
+          "コンポーネント名": "Infrastructure Layer",
+          "概要": "データの保存と外部依存（lowdb）の実装。",
+          "包含するユニットID": "UNIT-REPO, UNIT-STORAGE",
+          "物理パス": "src/repositories/, src/storage/"
+        },
+        "sources": []
+      },
+      "unit": {
+        "id": "UNIT-REPO",
+        "type": "Unit",
+        "document": "architecture.md",
+        "line": 52,
+        "implemented": true,
+        "relatedIds": [],
+        "metadata": {
+          "ID": "UNIT-REPO",
+          "ユニット名": "BG Repository",
+          "役割・責務": "データアクセスの抽象化とフィルタリング。",
+          "物理パス": "src/repositories/BoardGameRepository.ts"
+        },
+        "sources": [
+          {
+            "file": "src/repositories/BoardGameRepository.ts",
+            "line": 10,
+            "context": "// @unit [UNIT-REPO]"
+          }
+        ]
+      },
+      "func": null
+    },
+    {
+      "comp": {
+        "id": "COMP-INFRA",
+        "type": "Component",
+        "document": "architecture.md",
+        "line": 65,
+        "implemented": false,
+        "relatedIds": [
+          "UNIT-REPO",
+          "UNIT-STORAGE"
+        ],
+        "metadata": {
+          "ID": "COMP-INFRA",
+          "コンポーネント名": "Infrastructure Layer",
+          "概要": "データの保存と外部依存（lowdb）の実装。",
+          "包含するユニットID": "UNIT-REPO, UNIT-STORAGE",
+          "物理パス": "src/repositories/, src/storage/"
+        },
+        "sources": []
+      },
+      "unit": {
+        "id": "UNIT-STORAGE",
+        "type": "Unit",
+        "document": "architecture.md",
+        "line": 52,
+        "implemented": true,
+        "relatedIds": [],
+        "metadata": {
+          "ID": "UNIT-STORAGE",
+          "ユニット名": "JSON Storage",
+          "役割・責務": "lowdb を用いた物理ファイル I/O。",
+          "物理パス": "src/storage/JsonStorage.ts"
+        },
+        "sources": [
+          {
+            "file": "src/storage/JsonStorage.ts",
+            "line": 22,
+            "context": "// @unit [UNIT-STORAGE]"
+          }
+        ]
+      },
+      "func": null
+    },
+    {
+      "comp": {
+        "id": "COMP-UI",
+        "type": "Component",
+        "document": "architecture.md",
+        "line": 65,
+        "implemented": false,
+        "relatedIds": [
+          "UNIT-CLI"
+        ],
+        "metadata": {
+          "ID": "COMP-UI",
+          "コンポーネント名": "Presentation Layer",
+          "概要": "CLI によるユーザーインターフェース提供。",
+          "包含するユニットID": "UNIT-CLI",
+          "物理パス": "src/cli/"
+        },
+        "sources": []
+      },
+      "unit": {
+        "id": "UNIT-CLI",
+        "type": "Unit",
+        "document": "architecture.md",
+        "line": 52,
+        "implemented": true,
+        "relatedIds": [],
+        "metadata": {
+          "ID": "UNIT-CLI",
+          "ユニット名": "Main CLI",
+          "役割・責務": "ユーザーとの対話。Boundary の具現化。",
+          "物理パス": "src/cli/MainCli.ts"
+        },
+        "sources": [
+          {
+            "file": "src/cli/MainCli.ts",
+            "line": 9,
+            "context": "// @unit [UNIT-CLI]"
+          }
+        ]
+      },
+      "func": null
+    }
+  ],
+  "orphans": [],
+  "issues": []
+}

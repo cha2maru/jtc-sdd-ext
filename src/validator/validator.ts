@@ -16,10 +16,20 @@ export class ProjectValidator {
   private allReferences: ExtractedId[] = [];
   private issues: ValidationIssue[] = [];
 
+  // グラフ構造データ
+  private idGraph = new Map<string, {
+    parentId?: string | undefined;
+    children: Set<string>;
+    referencedBy: Set<string>;
+    references: Set<string>;
+    implementationFiles: Set<string>;
+  }>();
+
   validate(parseResults: ParseResult[], projectDir: string, sourceIds: ExtractedId[] = []): ValidationIssue[] {
     this.issues = [];
     this.allDefinitions.clear();
     this.allReferences = [];
+    this.idGraph.clear();
 
     // 1. 全IDの収集 (定義と参照を区別)
     for (const result of parseResults) {
@@ -45,10 +55,17 @@ export class ProjectValidator {
             
             if (isSameFile) {
               // 同一ファイル内での重複（見出しと表など）は許可し、情報を統合
-              const existingMetaCount = Object.keys(existing.metadata || {}).length;
-              const newMetaCount = Object.keys(extracted.metadata || {}).length;
-              if (newMetaCount > existingMetaCount) {
-                this.allDefinitions.set(extracted.id, extracted);
+              if (extracted.parentId) existing.parentId = extracted.parentId;
+              if (extracted.relatedIds) {
+                const merged = new Set([...(existing.relatedIds || []), ...extracted.relatedIds]);
+                existing.relatedIds = Array.from(merged);
+              }
+              if (extracted.files) {
+                const merged = new Set([...(existing.files || []), ...extracted.files]);
+                existing.files = Array.from(merged);
+              }
+              if (extracted.metadata) {
+                existing.metadata = { ...(existing.metadata || {}), ...extracted.metadata };
               }
               continue;
             } else if (isExistingIndex && !isNewIndex) {
@@ -109,7 +126,19 @@ export class ProjectValidator {
           message: isSource 
             ? `ソースコード内に定義不明なIDが見つかりました: ${ref.id}` 
             : `参照されているIDが見つかりません: ${ref.id}`,
-          severity: isSource ? 'warning' : 'error', // ソースコード内は警告に留める
+          severity: isSource ? 'warning' : 'error',
+        });
+      }
+
+      // 位置検証のチェック (REQ-V2-04)
+      if (ref.metadata?.is_valid_position === 'false') {
+        const tag = ref.metadata.tag || 'ID';
+        this.issues.push({
+          file: ref.file,
+          line: ref.line,
+          id: ref.id,
+          message: `IDコメント（@${tag}）の配置が不適切です。次行に関数やデータの定義があるか確認してください。`,
+          severity: 'warning',
         });
       }
     }
@@ -157,54 +186,36 @@ export class ProjectValidator {
       this.checkSourceImplementation(sourceIds);
     }
 
+    // 9. グラフの構築 (クエリ用)
+    this.buildGraph(sourceIds);
+
     return this.issues;
   }
 
   private checkSourceImplementation(sourceIds: ExtractedId[]) {
-    const implementedFuncIds = new Set(
-      sourceIds
-        .filter(s => s.id.startsWith('FUNC-'))
-        .map(s => s.id)
-    );
+    const implementedIds = new Set(sourceIds.map(s => s.id));
+    const allIds = Array.from(this.allDefinitions.keys());
 
-    const allFuncIds = Array.from(this.allDefinitions.keys())
-      .filter(id => id.startsWith('FUNC-'));
-
-    for (const funcId of allFuncIds) {
-      if (!implementedFuncIds.has(funcId)) {
-        const def = this.allDefinitions.get(funcId);
-        this.issues.push({
-          file: def?.file || 'requirements.md',
-          line: def?.line,
-          id: funcId,
-          message: `機能(FUNC)がソースコード内に実装（IDコメント）されていません。`,
-          severity: 'warning',
-        });
+    const checkType = (prefix: string, typeName: string, tag: string) => {
+      const targets = allIds.filter(id => id.startsWith(prefix));
+      for (const id of targets) {
+        if (!implementedIds.has(id)) {
+          const def = this.allDefinitions.get(id);
+          this.issues.push({
+            file: def?.file || 'requirements.md',
+            line: def?.line,
+            id: id,
+            message: `${typeName}(${prefix.replace('-','')})がソースコード内に実装（@${tag}）されていません。`,
+            severity: 'warning',
+          });
+        }
       }
-    }
+    };
 
-    // UNITのチェック
-    const implementedUnitIds = new Set(
-      sourceIds
-        .filter(s => s.id.startsWith('UNIT-'))
-        .map(s => s.id)
-    );
-
-    const allUnitIds = Array.from(this.allDefinitions.keys())
-      .filter(id => id.startsWith('UNIT-'));
-
-    for (const unitId of allUnitIds) {
-      if (!implementedUnitIds.has(unitId)) {
-        const def = this.allDefinitions.get(unitId);
-        this.issues.push({
-          file: def?.file || 'architecture.md',
-          line: def?.line,
-          id: unitId,
-          message: `ユニット(UNIT)がソースコード内に定義（IDコメント）されていません。`,
-          severity: 'warning',
-        });
-      }
-    }
+    checkType('FUNC-', '機能', 'logic');
+    checkType('UNIT-', 'ユニット', 'unit');
+    checkType('TEST-', '結合試験', 'test');
+    checkType('ACC-', '総合試験', 'acc');
   }
 
   private validateIdFormat(extracted: ExtractedId) {
@@ -311,7 +322,7 @@ export class ProjectValidator {
       else if (id.startsWith('FUNC-')) funcCount++;
     }
 
-    if (reqCount > 0 && specCount > 0 && reqCount >= specCount) {
+    if (reqCount > 0 && specCount > 0 && reqCount > specCount) {
       this.issues.push({
         file: 'requirements.md',
         message: `要求(REQ: ${reqCount})に対し詳細要件(SPEC: ${specCount})の数が不足しています。十分な詳細化が行われていません。`,
@@ -319,7 +330,7 @@ export class ProjectValidator {
       });
     }
 
-    if (specCount > 0 && funcCount > 0 && specCount >= funcCount) {
+    if (specCount > 0 && funcCount > 0 && specCount > funcCount) {
       this.issues.push({
         file: 'requirements.md',
         message: `詳細要件(SPEC: ${specCount})に対し機能定義(FUNC: ${funcCount})の数が不足しています。実装に向けた分解が不十分です。`,
@@ -398,5 +409,142 @@ export class ProjectValidator {
         });
       }
     }
+  }
+
+  private buildGraph(sourceIds: ExtractedId[]) {
+    for (const [id, def] of this.allDefinitions.entries()) {
+      const node = this.idGraph.get(id) || { children: new Set(), referencedBy: new Set(), references: new Set(), implementationFiles: new Set() };
+      node.parentId = def.parentId;
+      this.idGraph.set(id, node);
+
+      if (def.parentId) {
+        const parentNode = this.idGraph.get(def.parentId) || { children: new Set(), referencedBy: new Set(), references: new Set(), implementationFiles: new Set() };
+        parentNode.children.add(id);
+        this.idGraph.set(def.parentId, parentNode);
+      }
+    }
+
+    for (const ref of this.allReferences) {
+      const targetNode = this.idGraph.get(ref.id);
+      if (targetNode) {
+        targetNode.referencedBy.add(ref.file);
+      }
+    }
+
+    for (const sid of sourceIds) {
+      const node = this.idGraph.get(sid.id);
+      if (node) {
+        node.implementationFiles.add(sid.file);
+      }
+    }
+  }
+
+  // クエリメソッド
+  public getImpact(id: string): string[] {
+    const impact = new Set<string>();
+    const node = this.idGraph.get(id);
+    if (!node) return [];
+
+    // 下流（子）への影響
+    const addChildren = (targetId: string) => {
+      const n = this.idGraph.get(targetId);
+      if (n) {
+        for (const child of n.children) {
+          impact.add(child);
+          addChildren(child);
+        }
+      }
+    };
+    addChildren(id);
+
+    // 参照元ファイルへの影響
+    for (const file of node.referencedBy) impact.add(file);
+    for (const file of node.implementationFiles) impact.add(file);
+
+    return Array.from(impact);
+  }
+
+  public getTree(id: string): any {
+    const node = this.idGraph.get(id);
+    if (!node) return null;
+    
+    return {
+      id,
+      parentId: node.parentId,
+      children: Array.from(node.children).map(c => this.getTree(c)),
+      implementation: Array.from(node.implementationFiles)
+    };
+  }
+
+  public getMissingTests(): { id: string; type: 'SPEC' | 'REQ'; file: string }[] {
+    const missing: { id: string; type: 'SPEC' | 'REQ'; file: string }[] = [];
+    
+    for (const [id, def] of this.allDefinitions.entries()) {
+      if (id.startsWith('REQ-') || id.startsWith('SPEC-')) {
+        const node = this.idGraph.get(id);
+        if (!node) continue;
+
+        const referencingFiles = Array.from(node.referencedBy);
+        const isReq = id.startsWith('REQ-');
+        const testPattern = isReq ? /acceptance|ACC-/i : /integration|TEST-/i;
+        
+        const hasTest = referencingFiles.some(file => testPattern.test(file));
+        
+        if (!hasTest) {
+          missing.push({
+            id,
+            type: isReq ? 'REQ' : 'SPEC',
+            file: def.file
+          });
+        }
+      }
+    }
+    return missing;
+  }
+
+  public getSummary() {
+    const stats = {
+      REQ: { total: 0, detailed: 0 },
+      SPEC: { total: 0, functional: 0 },
+      FUNC: { total: 0, implemented: 0 },
+      UNIT: { total: 0, implemented: 0 },
+      TEST: { total: 0, implemented: 0 },
+      ACC: { total: 0, implemented: 0 }
+    };
+
+    for (const [id, node] of this.idGraph.entries()) {
+      if (id.startsWith('REQ-')) {
+        stats.REQ.total++;
+        if (node.children.size > 0) stats.REQ.detailed++;
+      } else if (id.startsWith('SPEC-')) {
+        stats.SPEC.total++;
+        if (node.children.size > 0) stats.SPEC.functional++;
+      } else if (id.startsWith('FUNC-')) {
+        stats.FUNC.total++;
+        if (node.implementationFiles.size > 0) stats.FUNC.implemented++;
+      } else if (id.startsWith('UNIT-')) {
+        stats.UNIT.total++;
+        if (node.implementationFiles.size > 0) stats.UNIT.implemented++;
+      } else if (id.startsWith('TEST-')) {
+        stats.TEST.total++;
+        if (node.implementationFiles.size > 0) stats.TEST.implemented++;
+      } else if (id.startsWith('ACC-')) {
+        stats.ACC.total++;
+        if (node.implementationFiles.size > 0) stats.ACC.implemented++;
+      }
+    }
+
+    return {
+      stats,
+      issues: {
+        errors: this.issues.filter(i => i.severity === 'error').length,
+        warnings: this.issues.filter(i => i.severity === 'warning').length
+      },
+      coverage: {
+        logical: stats.SPEC.total > 0 ? (stats.FUNC.total / stats.SPEC.total) : 0,
+        implementation: stats.FUNC.total > 0 ? (stats.FUNC.implemented / stats.FUNC.total) : 0,
+        test: stats.TEST.total > 0 ? (stats.TEST.implemented / stats.TEST.total) : 0
+      }
+    };
   }
 }

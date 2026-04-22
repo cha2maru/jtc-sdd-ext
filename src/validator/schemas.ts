@@ -91,6 +91,13 @@ export const SCHEMAS: Record<string, DocumentSchemaType> = {
           requiredColumns: ['ID', '種別', 'ソース (From)', 'ターゲット (To)', '理由・性質'],
         },
       },
+      '論理機能の割り当て': {
+        table: {
+          idColumn: 'コンポーネントID',
+          relatedColumn: '割り当てられた機能ID (FUNC)',
+          requiredColumns: ['コンポーネントID', '割り当てられた機能ID (FUNC)'],
+        },
+      },
     },
   },
   'REQ-XXX.md': {
@@ -125,7 +132,7 @@ export const SCHEMAS: Record<string, DocumentSchemaType> = {
     },
   },
   'ACC-XXX.md': {
-    title: /^総合試験書: \[ACC-\d{3,4}\].*$/,
+    title: /^総合試験書: \[ACC-[A-Z0-9-]+\] \(.*\)$/,
     sections: {
       '対象要求': {
         listIds: true,
@@ -141,7 +148,7 @@ export const SCHEMAS: Record<string, DocumentSchemaType> = {
     },
   },
   'TEST-XXX.md': {
-    title: /^結合試験書: \[TEST-\d{3,4}\].*$/,
+    title: /^結合試験書: \[TEST-[A-Z0-9-]+\] \(.*\)$/,
     sections: {
       '対象要件・機能': {
         listIds: true,
